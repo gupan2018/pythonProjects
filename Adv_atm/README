@@ -1,0 +1,35 @@
+作者： 圆滚滚
+版本：改进版本1.0
+程序介绍：
+    实现Atm常用功能
+
+   备注：只实现了注册以及登陆功能
+
+程序结构：
+|——README
+|——Adv_atm #ATM主目录
+|    |—— __init__.py
+|    |—— bin #ATM执行文件 目录
+|    |     |—— atm.py #ATM执行程序
+|    |     |—— manage.py #执行程序，未实现
+|    |—— conf #配置文件目录
+|    |     |—— __init__.py
+|    |     |—— settings.py #通用配置
+|    |—— core #主要程序逻辑
+|    |     |—— __init__.py
+|    |     |—— accounts.py #不知道做啥的
+|    |     |—— auth.py #提供用户注册、登陆、认证功能
+|    |     |—— main.py #主逻辑交互程序
+|    |     |—— transaction.py #有关用户账户金额操作接口，供user_operate.py调用
+|    |     |—— user_operate.py #提供用户支付\还款\取钱等功能
+|    |     |—— common #公共类，提供日志类、数据库操作类
+|    |     |     |—— db_handler.py #数据库操作类
+|    |     |     |—— logger.py #日志类，返回logger对象
+|    |—— db #数据库
+|    |     |—— __init__.py
+|    |     |—— account_sample.py #不知道做啥的
+|    |     |—— accounts #账户数据库，每个用户存储一个文件
+|    |—— log #日志
+|    |     |—— __init__.py
+|    |     |—— access.log #用户操作日志
+|    |     |—— transactions.log #用户交易日志
