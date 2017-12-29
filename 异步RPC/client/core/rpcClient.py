@@ -4,6 +4,7 @@ import pika
 import uuid
 import time
 import os
+import socket
 
 class RpcClient(object):
     def __init__(self):
@@ -14,35 +15,63 @@ class RpcClient(object):
 
         self.channel = self.connection.channel()
 
-        result = self.channel.queue_declare(exclusive=True)
-        self.callback_queue = result.method.queue
+        # 声明exchange
+        self.channel.exchange_declare(
+            exchange="test",
+            exchange_type="direct"
+        )
 
+        # 随机生成消息队列
+        result = self.channel.queue_declare(
+            exclusive=True
+        )
+        self.callback_queue = result.nethod_queue
+
+        # 注册处理函数
         self.channel.basic_consume(
-            self.on_response,
-            no_ack=True,
+            consumer_callback=self.on_response,
+            queue=self.callback_queue,
+            no_ack=True
+        )
+
+        # 获取本机ip地址
+        myname = socket.getfqdn(socket.gethostname())
+        self.myaddr = socket.gethostbyname(myname)
+
+        self.channel.queue_bind(
+            exchange="test",
+            routing_key=self.myaddr,
             queue=self.callback_queue
         )
 
     def on_response(self, ch, method, props, body):
-        # consumer端发给producer端消息时，将自己的id也一起发送，处理消息时通过这个标志位判断是不是自己要处理的消息
-        if self.corr_id == props.correlation_id:
+        if props.correlation_id == self.myaddr:
+            self.target_host = props.user_id
             res = os.popen(body.decode()).read()
             self.response = res.encode("utf-8")
         ch.basic_ack(delivery_tag=method.delivery_tag)
 
     def call(self):
         self.response = None
-        self.corr_id = str(uuid.uuid4())
-        self.channel.basic_publish(exchange='',
-                                   routing_key='rpc_queue',
-                                   properties=pika.BasicProperties(
-                                       reply_to=self.callback_queue,
-                                       correlation_id=self.corr_id,
-                                   ),
-                                   body='')
-        while self.response is None:
+
+        while True:
             # 相当于非阻塞的start_consuming
-            self.connection.process_data_events()
-            # print('waiting....')
-            time.sleep(0.5)
-        return int(self.response)
+            while self.response is None:
+                self.connection.process_data_events()
+
+            # 当response不是None时，发布消息
+            self.channel.basic_publish(exchange='test',
+                                       routing_key='rpc_queue',
+                                       properties=pika.BasicProperties(
+                                           reply_to=self.callback_queue,
+                                           correlation_id=self.target_host,
+                                           user_id=self.myaddr
+                                       ),
+                                       body=self.response)
+            # 清理资源
+            self.response = None
+            self.target_host = None
+
+                # 可以在这里干其他事，实现非阻塞
+                # time.sleep(0.5)
+            # return int(self.response)

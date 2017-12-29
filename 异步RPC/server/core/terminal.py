@@ -24,17 +24,15 @@ class Terminal(object):
         self.parse_cmd(cmd)
 
     def parse_cmd(self, cmd):
-        index = 0
         try:
-            index = cmd.index("-h")
+            cmd.index("-h")
         except ValueError:
             self.help()
             return
-        index = index + 3
         commond = re.search("'.*'", cmd).group()
         commond = commond.strip("'")
 
-        hosts = re.findall("h%d", cmd)
+        hosts = re.findall("h\d", cmd)
         for host in hosts:
             if host not in settings.hosts.keys():
                 print("host %s not exists" % host)
