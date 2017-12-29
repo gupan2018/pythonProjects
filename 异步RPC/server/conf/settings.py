@@ -10,10 +10,12 @@ import configparser
 ini_path = BASE_PATH + "\\conf\\settings.ini"
 
 handle = configparser.ConfigParser()
+if not os.path.isfile(ini_path):
+    print("not such file")
 handle.read(ini_path)
 
 # 获取配置的主机号
-HOSTS = handle.items("hosts")
+HOSTS = handle.items('hosts')
 hosts = {}
 for section in HOSTS:
     hosts[section[0]] = section[1]

@@ -4,4 +4,4 @@ from core.terminal import Terminal
 def run():
     t = Terminal()
     while True:
-        t.display()
+        t.terminal()
