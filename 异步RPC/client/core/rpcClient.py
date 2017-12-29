@@ -5,6 +5,7 @@ import uuid
 import time
 import os
 import socket
+import re
 
 class RpcClient(object):
     def __init__(self):
@@ -35,8 +36,11 @@ class RpcClient(object):
         )
 
         # 获取本机ip地址
-        myname = socket.getfqdn(socket.gethostname())
-        self.myaddr = socket.gethostbyname(myname)
+        res = os.popen("ifconfig").read()
+        myname = re.search("addr:.* B", res).group()
+        myname = myname.lstrip("addr:")
+        myname = myname.rstrip("B")
+        self.myaddr = myname.strip()
 
         # 绑定到主机的routing_key
         self.channel.queue_bind(
@@ -48,6 +52,8 @@ class RpcClient(object):
     def on_response(self, ch, method, props, body):
         print("body:", body)
         corr_host, target_host = props.correlation_id.split(",")
+        print(corr_host, target_host)
+        print(self.myaddr)
         if corr_host == self.myaddr:
             res = os.popen(body.decode()).read()
             print(res)
@@ -66,7 +72,7 @@ class RpcClient(object):
                 # 当response不是None时，发布消息
                 corr_id = self.target_host + "," + self.myaddr
                 self.channel.basic_publish(exchange='test',
-                                           routing_key='rpc_queue',
+                                           routing_key='192.168.17.136',
                                            properties=pika.BasicProperties(
                                                delivery_mode=2,
                                                reply_to=self.callback_queue,

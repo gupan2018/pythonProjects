@@ -53,7 +53,7 @@ class RpcServer(object):
         # 发布命令
         corr_id = host + "," + self.myaddr
         self.channel.basic_publish(exchange='test',
-                                   routing_key='rpc_queue',
+                                   routing_key='192.168.17.136',
                                    properties=pika.BasicProperties(
                                        delivery_mode=2,
                                        reply_to=self.callback_queue,

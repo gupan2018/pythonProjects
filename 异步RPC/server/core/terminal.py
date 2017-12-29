@@ -50,11 +50,13 @@ class Terminal(object):
         commond = re.search("'.*'", cmd).group()
         commond = commond.strip("'")
 
-        hosts = re.findall("h\d", cmd)
-        for host in hosts:
+        host_names = re.findall("h\d", cmd)
+        hosts = []
+        for host in host_names:
             if host not in settings.hosts.keys():
                 print("host %s not exists" % host)
                 return res
+            hosts.append(settings.hosts[host])
         res["flag"] = True
         res["data"] = [commond, hosts]
         return res
