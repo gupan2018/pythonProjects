@@ -10,6 +10,7 @@ class RpcServer(object):
     def __init__(self, *args):
         self.hosts = args[0]
         self.lock = args[1]
+        self.q = args[2]
         self.connection = pika.BlockingConnection(pika.ConnectionParameters(
             host='192.168.17.136',
             credentials=pika.PlainCredentials("admin", '123456')
@@ -45,7 +46,7 @@ class RpcServer(object):
         corr_host, target_host = props.correlation_id.split(",")
         if corr_host == self.myaddr:
             self.lock.acquire()
-            print(body.decode())
+            self.q.put(body.decode())
             self.lock.release()
         ch.basic_ack(delivery_tag=method.delivery_tag)
 

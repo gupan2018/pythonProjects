@@ -5,6 +5,7 @@ import re
 from conf import settings
 from core.rpcServer import RpcServer
 import threading
+import queue
 
 class Terminal(object):
     """
@@ -13,9 +14,10 @@ class Terminal(object):
     def __init__(self):
         self.display = "[admin@localhost]#"
         self.usage = "run 'cmd' -h h1 [h2, ...]"
+        self.q = queue.Queue()
 
     def run(self, cmd, hosts, lock):
-        server = RpcServer(hosts, lock)
+        server = RpcServer(hosts, lock, self.q)
         for host in hosts:
             server.call(cmd, host)
 
@@ -33,6 +35,7 @@ class Terminal(object):
         cmd = data[0]
         hosts = data[1]
         lock = threading.Lock()
+
         t1 = threading.Thread(target=self.run, args=(cmd, hosts, lock))
         t1.setDaemon(True)
         t1.start()
