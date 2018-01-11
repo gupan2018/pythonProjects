@@ -5,7 +5,7 @@ import logging
 
 class CLog:
     # ----------------------------------------------------------------------------
-    def __init__(self, path = "\\log\\test.log"):
+    def __init__(self, path = "\\logs\\test.logs"):
         #日志文件的存放路径，根据自己的需要去修改
         LOG_FILE_PATH = Root_path().get_root_path() + path
         self.logger = logging.getLogger()

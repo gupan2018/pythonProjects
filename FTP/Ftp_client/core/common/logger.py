@@ -22,7 +22,7 @@ def Logger(log_type):
     ch.setLevel(settings.LOG_LEVEL)
 
     # create file handler and set level to warning
-    log_file = "%s/log/%s" %(settings.BASE_DIR, settings.LOG_TYPES[log_type])
+    log_file = "%s/logs/%s" %(settings.BASE_DIR, settings.LOG_TYPES[log_type])
     fh = logging.FileHandler(log_file)
     fh.setLevel(settings.LOG_LEVEL)
     # create formatter

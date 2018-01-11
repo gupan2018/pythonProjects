@@ -45,7 +45,7 @@ class RpcClient(object):
         # 绑定到主机的routing_key
         self.channel.queue_bind(
             exchange="test",
-            routing_key="192.168.17.136",
+            routing_key="192.168.17.1",
             queue=self.callback_queue
         )
 
@@ -72,7 +72,7 @@ class RpcClient(object):
                 # 当response不是None时，发布消息
                 corr_id = self.target_host + "," + self.myaddr
                 self.channel.basic_publish(exchange='test',
-                                           routing_key='192.168.17.136',
+                                           routing_key=self.myaddr,
                                            properties=pika.BasicProperties(
                                                delivery_mode=2,
                                                reply_to=self.callback_queue,

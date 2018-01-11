@@ -7,8 +7,8 @@ import os
 LOG_LEVEL = logging.INFO
 BASE_DIR = BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOG_TYPES = {
-    # 'transaction': 'transactions.log',
-    'access': 'access.log',
+    # 'transaction': 'transactions.logs',
+    'access': 'access.logs',
 }
 
 # print(BASE_DIR)

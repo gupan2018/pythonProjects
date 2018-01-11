@@ -47,6 +47,7 @@ class RpcServer(object):
         if corr_host == self.myaddr:
             self.lock.acquire()
             self.q.put(body.decode())
+            self.response = body
             self.lock.release()
         ch.basic_ack(delivery_tag=method.delivery_tag)
 
@@ -54,7 +55,7 @@ class RpcServer(object):
         # 发布命令
         corr_id = host + "," + self.myaddr
         self.channel.basic_publish(exchange='test',
-                                   routing_key='192.168.17.136',
+                                   routing_key=self.myaddr,
                                    properties=pika.BasicProperties(
                                        delivery_mode=2,
                                        reply_to=self.callback_queue,
@@ -67,6 +68,8 @@ class RpcServer(object):
             # 相当于非阻塞的start_consuming
             if self.response is None:
                 self.connection.process_data_events()
-            # 清理资源
-            self.response = None
-            self.target_host = None
+            if self.response is not None:
+                # 清理资源
+                self.response = None
+                self.target_host = None
+                break

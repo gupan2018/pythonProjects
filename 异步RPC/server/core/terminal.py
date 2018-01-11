@@ -13,21 +13,18 @@ class Terminal(object):
     """
     def __init__(self):
         self.display = "[admin@localhost]#"
-        self.usage = "run 'cmd' -h h1 [h2, ...]"
+        self.usage = """
+        run 'cmd' -h h1 [h2, ...]
+        get
+        """
         self.q = queue.Queue()
 
-    def run(self, cmd, hosts, lock):
+    def run_thread(self, cmd, hosts, lock):
         server = RpcServer(hosts, lock, self.q)
         for host in hosts:
             server.call(cmd, host)
 
-    def terminal(self):
-        cmd = input(self.display)
-        if cmd == 'b':
-            print("bye".center(50, "-"))
-            exit(0)
-        if not cmd.startswith("run "):
-            self.help()
+    def run(self, cmd):
         res = self.parse_cmd(cmd)
         if not res["flag"]:
             return
@@ -36,9 +33,25 @@ class Terminal(object):
         hosts = data[1]
         lock = threading.Lock()
 
-        t1 = threading.Thread(target=self.run, args=(cmd, hosts, lock))
+        t1 = threading.Thread(target=self.run_thread, args=(cmd, hosts, lock))
         t1.setDaemon(True)
         t1.start()
+
+    def get(self, cmd):
+        msg = self.q.get()
+        print(msg)
+
+    def terminal(self):
+        cmd = input(self.display)
+        if cmd == 'b':
+            print("bye".center(50, "-"))
+            exit(0)
+
+        option = cmd.split()[0]
+        if not hasattr(self, option):
+            self.help()
+        op_func = getattr(self, option)
+        op_func(cmd)
 
     def parse_cmd(self, cmd):
         res = {

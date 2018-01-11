@@ -39,8 +39,8 @@ ACCESS = "access"
 在日志打印类中设置初始化参数log_type，通过LOG_TYPES字典的键值形式，限制其类型
 """
 LOG_TYPES = {
-    'transaction': 'transactions.log',
-    'access': 'access.log',
+    'transaction': 'transactions.logs',
+    'access': 'access.logs',
 }
 
 

@@ -8,4 +8,4 @@ STATUS = 3
 INIT = 4
 LOMAL = True
 FREEZE = False
-LOG_PATH = "\\log\\atm.log"
+LOG_PATH = "\\logs\\atm.logs"

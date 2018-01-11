@@ -25,5 +25,5 @@ LOG_LEVEL = logging.INFO
 
 # 打印日志位置
 LOG_TYPES = {
-    'access': 'access.log',
+    'access': 'access.logs',
 }
