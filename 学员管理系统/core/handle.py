@@ -1,5 +1,11 @@
 # -*- coding:utf-8 -*-
 # __author__ = 'gupan'
+import os
+import sys
+BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, BASE_PATH)
+from conf import settings
+
 from sqlalchemy import create_engine
 import sqlalchemy
 from sqlalchemy.ext.declarative import declarative_base
@@ -52,6 +58,7 @@ class Score(Base):
     __tablename__ = 'score'
     stu_qq = Column(String(32), ForeignKey("student.qq"), primary_key=True)
     class_id = Column(Integer, ForeignKey("class.id"), primary_key=True)
+    class_count = Column(Integer, primary_key=True)
     score = Column(String(32))
 
     student_obj = relationship("Student", backref="score")
@@ -60,7 +67,16 @@ class Score(Base):
     def __repr__(self):
         return "课程名：%s, 分数：%s" %(self.class_obj.name, self.score)
 
-engine = create_engine("mysql+pymysql://root:123456@192.168.17.136/stu_manage?charset=utf8",
+# 获取数据库连接信息
+conn_cursor = "mysql+pymysql://{user}:{password}@{host}/{database}?charset={charset}".format(
+                            user=settings.User,
+                            password=settings.Password,
+                            host=settings.Host,
+                            database=settings.Database,
+                            charset=settings.Charset
+                        )
+
+engine = create_engine(conn_cursor,
                        encoding='utf-8',
                        echo=True
                        )
